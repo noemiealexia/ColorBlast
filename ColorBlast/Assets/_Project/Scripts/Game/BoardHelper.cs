@@ -74,15 +74,6 @@ namespace ColorBlast
             return tile;
         }
 
-        /// <summary>
-        /// Give me a random basic tile
-        /// </summary>
-        private Tile GetRandomBasicTile()
-        {
-            int random = Random.Range(0, Tile.BasicTileCount);
-            TileType randomType = (TileType)random;
-            return GetTileByType(randomType);
-        }
 
         /// <summary>
         /// This makes tiles fall down if they have an empty space (Slot) underneath them.
@@ -143,48 +134,32 @@ namespace ColorBlast
             return emptySlots;
         }
 
-        /// <summary>
-        /// Checks the board if there is at least 1 Tile to pop
-        /// or else, board is dead. We need to reset the board.
-        /// </summary>
-        public bool IsThereAnyValidMove() 
+        
+      
+        public bool IsThereAnyValidMove()
         {
             for (int y = 0; y < mHeight - 1; y++)
             {
                 for (int x = 0; x < mWidth - 1; x++)
                 {
-                    var horizonTal_1 = mBoardMap[y, x];
-                    var horizonTal_2 = mBoardMap[y, x + 1];
-
-                    var vertical_1 = mBoardMap[y, x];
-                    var vertical_2 = mBoardMap[y + 1, x];
-
-                    if(horizonTal_1.TheTile.TType == horizonTal_2.TheTile.TType)
-                    {
+                    if (IsMatchAt(x, y))
                         return true;
-                    }
-
-                    if(vertical_1.TheTile.TType == vertical_2.TheTile.TType) 
-                    {
-                        return true;
-                    }
-
-                    // Special Tiles
-                    if (horizonTal_1.TheTile.SpecialTile || horizonTal_2.TheTile.SpecialTile)
-                    {
-                        return true;
-                    }
-
-                    if (vertical_1.TheTile.SpecialTile || vertical_2.TheTile.SpecialTile)
-                    {
-                        return true;
-                    }
                 }
             }
-
-            // If we are up to here.
-            // I'm afraid my friend, we need a new random board!
             return false;
+        }
+
+        private bool IsMatchAt(int x, int y)
+        {
+            var current = mBoardMap[y, x];
+            var right = mBoardMap[y, x + 1];
+            var below = mBoardMap[y + 1, x];
+
+            return current.TheTile.TType == right.TheTile.TType ||
+                   current.TheTile.TType == below.TheTile.TType ||
+                   current.TheTile.SpecialTile ||
+                   right.TheTile.SpecialTile ||
+                   below.TheTile.SpecialTile;
         }
 
         /// <summary>

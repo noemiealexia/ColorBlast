@@ -192,7 +192,7 @@ namespace ColorBlast
 
             if (mGameService.MoveManager.OutOfMoves() && !mLevelService.AreGoalsCompleted())
             {
-                Debug.Log("Game Over: Out of moves!");
+
                 mGameService.EndSession();
 
                 var mainUI = FindObjectOfType<MainUI>();
