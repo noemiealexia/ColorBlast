@@ -19,6 +19,6 @@ J'ai aussi modifié le code existant pour qu'au lieu de prendre des tuiles aléa
 Ceci permet de s'assurer d'un mix de couleurs plus varié qu'un choix aléatoire, et donne une bonne base pour des futures implémentations si on veut faire des niveaux plus spéciaux.
 C'est ici que la **liste chaînée** est utilisée. **(point 5, diapo 7)**
 
-J'ai fait des **améliorations au code (refactoring)** pour qu'il soit plus lisible. **(point 7, diapo 9)**
+J'ai fait des **améliorations au code (refactoring)** pour qu'il soit plus lisible et performant. **(point 7, diapo 9)**
 
 Et finalement, j'ai ajouté une **fonctionalité d'accessibilité** en ajoutant un mode daltonien qui peut être activé et désactivé en tout temps. **(point 8, diapo 10)
