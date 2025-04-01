@@ -13,6 +13,8 @@ namespace ColorBlast
         private IPoolService mPoolService;
         private Slot[,] mBoardMap;
 
+        private TileColorQueue colorQueue = new TileColorQueue();
+
         private int mWidth;
         private int mHeight;
 
@@ -25,19 +27,21 @@ namespace ColorBlast
             mWidth  = mBoardMap.GetLength(1);
         }
 
-        public Tile GetRandomTile(float specialChance) 
+        public Tile GetRandomTile(float specialChance)
         {
-            bool isSpecialTile = Random.Range(0.0f, 1.0f) < specialChance;
+            bool isSpecialTile = UnityEngine.Random.Range(0.0f, 1.0f) < specialChance;
 
             Tile tile = null;
 
-            if(isSpecialTile) 
+            if (isSpecialTile)
             {
                 tile = GetRandomSpecialTile();
             }
-            else 
+            else
             {
-                tile = GetRandomBasicTile();
+                // Use color queue to get the next tile color
+                TileType nextColor = colorQueue.GetNextColor();
+                tile = GetTileByType(nextColor);
             }
 
             return tile;
@@ -53,39 +57,31 @@ namespace ColorBlast
             return tile;
         }
 
+        private Tile GetTileByType(TileType type)
+        {
+            PoolType poolType = type switch
+            {
+                TileType.Red => PoolType.TileRed,
+                TileType.Green => PoolType.TileGreen,
+                TileType.Blue => PoolType.TileBlue,
+                TileType.Yellow => PoolType.TileYellow,
+                TileType.Bomb => PoolType.TileBomb,
+                _ => PoolType.TileRed
+            };
+
+            Tile tile = mPoolService.Get<Tile>(poolType);
+            tile.Init(poolType);
+            return tile;
+        }
+
         /// <summary>
         /// Give me a random basic tile
         /// </summary>
         private Tile GetRandomBasicTile()
         {
             int random = Random.Range(0, Tile.BasicTileCount);
-            Tile tile = null;
-
-            PoolType poolType = PoolType.TileRed;
-
-            switch (random)
-            {
-                case 0:
-                    poolType = PoolType.TileRed;
-                    break;
-
-                case 1:
-                    poolType = PoolType.TileGreen;
-                    break;
-
-                case 2:
-                    poolType = PoolType.TileBlue;
-                    break;
-
-                case 3:
-                    poolType = PoolType.TileYellow;
-                    break;
-            }
-          
-            tile = mPoolService.Get<Tile>(poolType);
-            tile.Init(poolType);
-
-            return tile;
+            TileType randomType = (TileType)random;
+            return GetTileByType(randomType);
         }
 
         /// <summary>
