@@ -26,8 +26,6 @@ namespace ColorBlast
             {
                 LevelCompleted = new bool[levelCount]
             };
-
-            //LevelProgress.LevelCompleted[0] = true;
         }
     }
 

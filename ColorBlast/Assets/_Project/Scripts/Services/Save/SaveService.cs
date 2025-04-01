@@ -144,23 +144,16 @@ namespace ColorBlast
 
         public void MarkLevelCompleted(int levelIndex)
         {
-            Debug.Log("MarkLevelCompleted: " + levelIndex);
 
             if (mSaveData?.LevelProgress?.LevelCompleted == null)
             {
-                Debug.LogWarning("LevelProgress is null when trying to mark complete.");
                 return;
             }
 
             if (levelIndex >= 0 && levelIndex < mSaveData.LevelProgress.LevelCompleted.Length)
             {
                 mSaveData.LevelProgress.LevelCompleted[levelIndex] = true;
-                Debug.Log("Level marked complete: " + levelIndex);
                 Save();
-            }
-            else
-            {
-                Debug.LogError("Level index out of bounds in MarkLevelCompleted: " + levelIndex);
             }
         }
     }
