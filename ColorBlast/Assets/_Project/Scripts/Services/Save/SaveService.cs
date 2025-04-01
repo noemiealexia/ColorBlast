@@ -38,7 +38,6 @@ namespace ColorBlast
 
             LoadInternal();
 
-            // Create default save data if there is no previous one
             if (mSaveData == null)
             {
                 CreateDefaultSaveData();
@@ -83,7 +82,6 @@ namespace ColorBlast
         private void SaveInternal()
         {
             string json = JsonUtility.ToJson(mSaveData);
-            Debug.Log("Saving JSON: " + json);
 
             SaveFileManager.WriteToFile(SaveFileName, json);
         }
@@ -97,24 +95,20 @@ namespace ColorBlast
                     try
                     {
                         mSaveData = JsonUtility.FromJson<SaveData>(jsonStr);
-                        Debug.Log("Deserialized SaveData: " + jsonStr);
 
                         if (mSaveData.LevelProgress?.LevelCompleted == null || mSaveData.LevelProgress.LevelCompleted.Length == 0)
                         {
-                            Debug.LogWarning("Save data incomplete — resetting to defaults.");
                             CreateDefaultSaveData();
                         }
                     }
                     catch
                     {
-                        Debug.LogError("Failed to deserialize save — resetting to defaults.");
                         CreateDefaultSaveData();
                     }
                 }
             }
             else
             {
-                Debug.LogWarning("No save file — creating new save.");
                 CreateDefaultSaveData();
             }
         }
@@ -125,7 +119,6 @@ namespace ColorBlast
 
             if (mSaveData?.LevelProgress?.LevelCompleted == null)
             {
-                Debug.Log("LevelProgress is null — defaulting to level 0 only");
                 result = (levelIndex == 0);
             }
             else if (levelIndex == 0)
