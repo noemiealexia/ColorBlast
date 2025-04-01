@@ -14,5 +14,8 @@ namespace ColorBlast
         void DeleteSave();
         bool IsReady();
         SaveData GetSaveData();
+        bool IsLevelUnlocked(int levelIndex);
+
+        void MarkLevelCompleted(int levelIndex);
     }
 }

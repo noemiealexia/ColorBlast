@@ -16,6 +16,8 @@ namespace ColorBlast
         [Range(GameConstants.MinBoardSize, GameConstants.MaxBoardSize)]
         public int Height;
 
+        public int MaxMoves = 20;
+
         public List<LevelGoal> Goals;
     }
 

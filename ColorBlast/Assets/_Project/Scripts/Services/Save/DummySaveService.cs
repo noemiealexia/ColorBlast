@@ -51,5 +51,15 @@ namespace ColorBlast
             Debug.Log("DummySaveService - Load");
             return null;
         }
+
+        public bool IsLevelUnlocked(int levelIndex)
+        {
+            return true;
+        }
+
+        public void MarkLevelCompleted(int levelIndex)
+        {
+            Debug.Log($"DummySaveService - MarkLevelCompleted({levelIndex})");
+        }
     }
 }

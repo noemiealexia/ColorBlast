@@ -33,6 +33,10 @@ namespace ColorBlast
         private void Start()
         {
             StartInit();
+
+            var saveService = ServiceManager.Instance.Get<ISaveService>();
+            saveService.DeleteSave();
+            saveService.Load();
         }
 
         private void OnDisable()

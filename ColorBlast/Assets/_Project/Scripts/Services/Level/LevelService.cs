@@ -22,7 +22,13 @@ namespace ColorBlast
         public LevelService(LevelData levelData) 
         {
             mLevelData = levelData;
+            mCurrentLevelIndex = 0;
         }
+
+        private int mCurrentLevelIndex;
+
+
+        public Level CurrentLevel => mLevelData.LevelList[mCurrentLevelIndex];
 
         public void Init()
         {
@@ -104,6 +110,9 @@ namespace ColorBlast
             if (CheckAllGoalsAreCompleted()) 
             {
                 mLevelCompleted = true;
+
+                ServiceManager.Instance.Get<ISaveService>().MarkLevelCompleted(mLastLoadedLevelIndex);
+
                 LevelCompleted?.Invoke();
             }
         }
@@ -136,6 +145,11 @@ namespace ColorBlast
             return true;
         }
 
-      
+        public bool AreGoalsCompleted()
+        {
+            return CheckAllGoalsAreCompleted();
+        }
+
+
     }
 }

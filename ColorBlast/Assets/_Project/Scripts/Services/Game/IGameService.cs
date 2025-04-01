@@ -9,6 +9,7 @@ namespace ColorBlast
         event Action SessionStarted;
         event Action SessionEnded;
 
+        MoveManager MoveManager { get; }
         void StartSession();
         void EndSession();
     }

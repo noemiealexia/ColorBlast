@@ -60,7 +60,9 @@ namespace ColorBlast
         {
             if (IsReady())
             {
-                mSaveData.ResetToDefaults();
+                int levelCount = ServiceManager.Instance.Get<ILevelService>().GetTotalLevelCount();
+                mSaveData.ResetToDefaults(levelCount);
+                Save();
             }
         }
 
@@ -71,39 +73,101 @@ namespace ColorBlast
 
         private void CreateDefaultSaveData()
         {
+            int levelCount = ServiceManager.Instance.Get<ILevelService>().GetTotalLevelCount();
+
             mSaveData = new SaveData();
-            mSaveData.ResetToDefaults();
+            mSaveData.ResetToDefaults(levelCount); // ??
             SaveInternal();
         }
 
         private void SaveInternal()
         {
-            float startTime = Time.realtimeSinceStartup;
+            string json = JsonUtility.ToJson(mSaveData);
+            Debug.Log("Saving JSON: " + json);
 
-            SaveFileManager.WriteToFile(SaveFileName, JsonUtility.ToJson(mSaveData));
-
-            Logman.Log("Game saved: " + (Time.realtimeSinceStartup - startTime));
+            SaveFileManager.WriteToFile(SaveFileName, json);
         }
 
         private void LoadInternal()
         {
             if (SaveFileManager.LoadFromFile(SaveFileName, out string jsonStr))
             {
-                mSaveData = null;
-
-                if (!jsonStr.Equals(string.Empty))
+                if (!string.IsNullOrEmpty(jsonStr))
                 {
                     try
                     {
-                        Logman.Log(jsonStr);
                         mSaveData = JsonUtility.FromJson<SaveData>(jsonStr);
+                        Debug.Log("Deserialized SaveData: " + jsonStr);
+
+                        if (mSaveData.LevelProgress?.LevelCompleted == null || mSaveData.LevelProgress.LevelCompleted.Length == 0)
+                        {
+                            Debug.LogWarning("Save data incomplete — resetting to defaults.");
+                            CreateDefaultSaveData();
+                        }
                     }
                     catch
                     {
-                        Debug.LogError("ERROR: Can't de-serialize json str, " + jsonStr);
+                        Debug.LogError("Failed to deserialize save — resetting to defaults.");
+                        CreateDefaultSaveData();
                     }
                 }
             }
+            else
+            {
+                Debug.LogWarning("No save file — creating new save.");
+                CreateDefaultSaveData();
+            }
         }
+
+        public bool IsLevelUnlocked(int levelIndex)
+        {
+            bool result = false;
+
+            if (mSaveData?.LevelProgress?.LevelCompleted == null)
+            {
+                Debug.Log("LevelProgress is null — defaulting to level 0 only");
+                result = (levelIndex == 0);
+            }
+            else if (levelIndex == 0)
+            {
+                result = true;
+            }
+            else
+            {
+                result = mSaveData.LevelProgress.LevelCompleted.Length > levelIndex - 1 &&
+                         mSaveData.LevelProgress.LevelCompleted[levelIndex - 1];
+            }
+
+            Debug.Log($"IsLevelUnlocked({levelIndex}) = {result}");
+            return result;
+        }
+
+        public void MarkLevelCompleted(int levelIndex)
+        {
+            Debug.Log("MarkLevelCompleted: " + levelIndex);
+
+            if (mSaveData?.LevelProgress?.LevelCompleted == null)
+            {
+                Debug.LogWarning("LevelProgress is null when trying to mark complete.");
+                return;
+            }
+
+            if (levelIndex >= 0 && levelIndex < mSaveData.LevelProgress.LevelCompleted.Length)
+            {
+                mSaveData.LevelProgress.LevelCompleted[levelIndex] = true;
+                Debug.Log("Level marked complete: " + levelIndex);
+                Save();
+            }
+            else
+            {
+                Debug.LogError("Level index out of bounds in MarkLevelCompleted: " + levelIndex);
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class LevelProgress
+    {
+        public bool[] LevelCompleted;
     }
 }

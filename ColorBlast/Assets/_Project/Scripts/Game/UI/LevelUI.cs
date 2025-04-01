@@ -11,12 +11,14 @@ namespace ColorBlast
         [SerializeField] private Transform ItemContainerTransform;
 
         private ILevelService mLevelService;
-     
+        private ISaveService mSaveService;
+
         private bool mListPopulated = false;
 
         void Awake() 
         {
             mLevelService = ServiceManager.Instance.Get<ILevelService>();
+            mSaveService = ServiceManager.Instance.Get<ISaveService>();
         }
 
         void OnEnable() 
@@ -53,15 +55,31 @@ namespace ColorBlast
 
         private void PopulateLevelList() 
         {
+            var saveService = ServiceManager.Instance.Get<ISaveService>();
             var levels = mLevelService.GetLevelList();
 
             for(int i = 0; i < levels.Count; i++) 
             {
-                var levelItemUI = GameObject.Instantiate(LevelItemUIPrefab, ItemContainerTransform);
-                levelItemUI.Fill(i + 1, levels[i]);
+                bool isUnlocked = saveService.IsLevelUnlocked(i);
+                Debug.Log($"Level {i} isUnlocked: {isUnlocked}");
+
+                var levelItemUI = Instantiate(LevelItemUIPrefab, ItemContainerTransform);
+                levelItemUI.Fill(i + 1, levels[i], isUnlocked);
             }
 
             mListPopulated = true;
+        }
+
+        public void RefreshLevelList()
+        {
+
+            foreach (Transform child in ItemContainerTransform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            mListPopulated = false;
+            PopulateLevelList();
         }
     }
 }

@@ -185,6 +185,20 @@ namespace ColorBlast
             }
 
             mAudioService.PlaySfx(SfxType.Pop);
+
+            mGameService.MoveManager.RegisterMove();
+
+            FindObjectOfType<InGameUI>().UpdateMovesLeft(mGameService.MoveManager.MaxMoves - mGameService.MoveManager.CurrentMoves);
+
+            if (mGameService.MoveManager.OutOfMoves() && !mLevelService.AreGoalsCompleted())
+            {
+                Debug.Log("Game Over: Out of moves!");
+                mGameService.EndSession();
+
+                var mainUI = FindObjectOfType<MainUI>();
+                mainUI.ShowReplayOnFailure();
+                mainUI.AnimateLevelFailed();
+            }
         }
 
         private void AfterPop() 

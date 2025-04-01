@@ -12,15 +12,21 @@ namespace ColorBlast
         private IAudioService mAudioService;
         private ILevelService mLevelService;
 
+        public MoveManager MoveManager { get; private set; }
+
         public void Init()
         {
             mAudioService = ServiceManager.Instance.Get<IAudioService>();
             mLevelService = ServiceManager.Instance.Get<ILevelService>();
             mLevelService.LevelCompleted += OnLevelCompleted;
-            
+
+            int maxMoves = mLevelService.CurrentLevel.MaxMoves;
+            MoveManager = new MoveManager();
+            MoveManager.Initialize(maxMoves);
+
             GameInited?.Invoke();
 
-            Logman.Log("GameService - Init");
+            Logman.Log($"GameService - Init with {maxMoves} max moves");
         }
 
         public void Release()
@@ -31,6 +37,9 @@ namespace ColorBlast
 
         public void StartSession()
         {
+            int maxMoves = mLevelService.CurrentLevel.MaxMoves;
+            MoveManager.Initialize(maxMoves);
+
             SessionStarted?.Invoke();
         }
 

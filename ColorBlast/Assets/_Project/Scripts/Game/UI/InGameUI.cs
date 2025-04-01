@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Utility;
+using DG.Tweening;
+using UnityEngine.UI;
 
 namespace ColorBlast
 {
@@ -9,6 +12,8 @@ namespace ColorBlast
     {
         [SerializeField] private GoalItemUI GoalItemUIPrefab;
         [SerializeField] private Transform GoalItemContainerTransform;
+
+        [SerializeField] private TextMeshProUGUI movesText;
 
         private IGameService mGameService;
         private ILevelService mLevelService;
@@ -31,6 +36,8 @@ namespace ColorBlast
         {
             mGameService.SessionStarted    -= OnSessionStarted;
             mLevelService.LevelGoalUpdated -= OnLevelGoalUpdated;
+
+            movesText.gameObject.SetActive(false);
         }
 
         public void Open()
@@ -46,6 +53,11 @@ namespace ColorBlast
         private void OnSessionStarted()
         {
             PopulateLevelGoals();
+
+            int maxMoves = mGameService.MoveManager.MaxMoves;
+            UpdateMovesLeft(maxMoves);
+
+            movesText.gameObject.SetActive(true);
         }
 
         private void PopulateLevelGoals() 
@@ -76,6 +88,30 @@ namespace ColorBlast
                     goalItemUI.UpdateCount(levelGoal.Count);
                 }
             }
+        }
+
+        public void UpdateMovesLeft(int movesLeft)
+        {
+            movesText.text = $"Moves: {movesLeft}";
+
+            if (movesLeft <= 3)
+            {
+                movesText.color = Color.red;
+            }
+            else
+            {
+                movesText.color = Color.white;
+            }
+
+            movesText.transform.DOKill();
+            movesText.transform.localScale = Vector3.one;
+            movesText.transform
+                .DOScale(1.2f, 0.15f)
+                .SetEase(Ease.OutBack)
+                .OnComplete(() =>
+                {
+                    movesText.transform.DOScale(1f, 0.15f).SetEase(Ease.InQuad);
+                });
         }
     }
 }

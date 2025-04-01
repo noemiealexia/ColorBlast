@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,10 @@ namespace ColorBlast
         [SerializeField] private Image ReplayButtonImg;
         [SerializeField] private Sprite SfxIsOnSprite;
         [SerializeField] private Sprite SfxIsOffSprite;
+
+        [Header("Texts")]
+        [SerializeField] private TextMeshProUGUI levelFailedText;
+        [SerializeField] private TextMeshProUGUI successText;
 
         private ILevelService mLevelService;
         private IGameService mGameService;
@@ -82,7 +87,16 @@ namespace ColorBlast
             {
                 // Level completed enable replay button with small delay
                 ReplayButton.gameObject.SetActive(true);
+                successText.gameObject.SetActive(true);
+
+                LevelUI.RefreshLevelList();
             });
+
+        }
+
+        public void ShowReplayOnFailure()
+        {
+            ReplayButton.gameObject.SetActive(true);
         }
 
         private void OnGameInited()
@@ -101,6 +115,17 @@ namespace ColorBlast
             ReplayButtonImg.sprite = audioSetting.SfxIsOn ? SfxIsOnSprite : SfxIsOffSprite;
         }
 
+        public void AnimateLevelFailed()
+        {
+            levelFailedText.gameObject.SetActive(true);
+            levelFailedText.alpha = 0f;
+            levelFailedText.transform.localScale = Vector3.one * 0.8f;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(levelFailedText.DOFade(1f, 0.4f));
+            seq.Join(levelFailedText.transform.DOScale(1f, 0.4f).SetEase(Ease.OutBack));
+        }
+
         #region Button Callbacks
 
         private void OnHomeClicked() 
@@ -108,6 +133,8 @@ namespace ColorBlast
             LevelUI.Open();
             InGameUI.Close();
 
+            successText.gameObject.SetActive(false);
+            levelFailedText.gameObject.SetActive(false);
             ServiceManager.Instance.Get<IGameService>().EndSession();
             PlayButton.gameObject.SetActive(false);
             ReplayButton.gameObject.SetActive(false);
@@ -132,6 +159,8 @@ namespace ColorBlast
 
         private void OnReplayClicked() 
         {
+            successText.gameObject.SetActive(false);
+            levelFailedText.gameObject.SetActive(false);
             // Reload current level
             var lastIndex = mLevelService.GetLastLoadedLevelIndex();
             mLevelService.LoadLevel(lastIndex);
