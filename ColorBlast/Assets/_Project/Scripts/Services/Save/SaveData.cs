@@ -35,15 +35,12 @@ namespace ColorBlast
     public class SettingsData
     {
         public bool SfxIsOn;
+        public bool ColorBlindMode;
 
         public SettingsData()
         {
             SfxIsOn = true;
-        }
-
-        public void SetSfxIsOn(bool isOn)
-        {
-            SfxIsOn = isOn;
+            ColorBlindMode = false;
         }
     }
 

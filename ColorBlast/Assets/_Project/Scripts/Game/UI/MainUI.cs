@@ -18,6 +18,7 @@ namespace ColorBlast
         [SerializeField] private Button MuteButton;
         [SerializeField] private Button PlayButton;
         [SerializeField] private Button ReplayButton;
+        [SerializeField] private Button ColorBlindToggleButton;
 
         [Header("Sprite Assets")]
         [SerializeField] private Image ReplayButtonImg;
@@ -27,6 +28,7 @@ namespace ColorBlast
         [Header("Texts")]
         [SerializeField] private TextMeshProUGUI levelFailedText;
         [SerializeField] private TextMeshProUGUI successText;
+        [SerializeField] private TextMeshProUGUI ColorBlindToggleButtonText;
 
         private ILevelService mLevelService;
         private IGameService mGameService;
@@ -38,6 +40,7 @@ namespace ColorBlast
             MuteButton.onClick.AddListener(OnMuteClicked);
             PlayButton.onClick.AddListener(OnPlayClicked);
             ReplayButton.onClick.AddListener(OnReplayClicked);
+            ColorBlindToggleButton.onClick.AddListener(OnColorBlindToggleClicked);
 
             mLevelService    = ServiceManager.Instance.Get<ILevelService>();
             mGameService     = ServiceManager.Instance.Get<IGameService>();
@@ -165,6 +168,30 @@ namespace ColorBlast
             var lastIndex = mLevelService.GetLastLoadedLevelIndex();
             mLevelService.LoadLevel(lastIndex);
             ReplayButton.gameObject.SetActive(false);
+        }
+
+        private void OnColorBlindToggleClicked()
+        {
+            var settingsService = ServiceManager.Instance.Get<ISettingsService>();
+            var settings = settingsService.GetAudioSettings();
+            settings.ColorBlindMode = !settings.ColorBlindMode;
+            settingsService.SetAudioSettings(settings);
+
+            UpdateColorBlindButtonText();
+
+            foreach (var tile in FindObjectsOfType<Tile>())
+            {
+                var material = tile.GetComponent<Renderer>().material;
+                material.color = tile.TileDatRef.GetTileColor(tile.TType);
+            }
+
+            FindObjectOfType<InGameUI>().RefreshGoalColors();
+        }
+
+        private void UpdateColorBlindButtonText()
+        {
+            var isOn = ServiceManager.Instance.Get<ISettingsService>().GetAudioSettings().ColorBlindMode;
+            ColorBlindToggleButtonText.SetText(isOn ? "Color Blind: ON" : "Color Blind: OFF");
         }
 
         #endregion

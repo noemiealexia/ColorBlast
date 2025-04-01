@@ -19,6 +19,7 @@ namespace ColorBlast
     {
         [SerializeField] private TileType TileType;
         [SerializeField] private TileData TileDat;
+        public TileData TileDatRef => TileDat;
 
         public const int BasicTileCount = 4;
 
@@ -38,15 +39,11 @@ namespace ColorBlast
 
         public void Init(PoolType poolType) 
         {
-            if (mInited) 
-            {
-                return;
-            }
 
             var material   = GetComponent<Renderer>().material;
             material.color = TileDat.GetTileColor(TType);
-            SpecialTile    = TileDat.IsSpecialTile(TType);
 
+            SpecialTile    = TileDat.IsSpecialTile(TType);
             mPoolType = poolType;
             mInited = true;
         }

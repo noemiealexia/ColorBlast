@@ -113,5 +113,13 @@ namespace ColorBlast
                     movesText.transform.DOScale(1f, 0.15f).SetEase(Ease.InQuad);
                 });
         }
+
+        public void RefreshGoalColors()
+        {
+            foreach (var goalUI in mGoalItems.Values)
+            {
+                goalUI.RefreshColor();
+            }
+        }
     }
 }

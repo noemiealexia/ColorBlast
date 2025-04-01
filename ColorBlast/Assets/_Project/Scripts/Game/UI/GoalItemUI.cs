@@ -11,10 +11,12 @@ namespace ColorBlast
         [SerializeField] private Image BackgroundImage;
         [SerializeField] private TextMeshProUGUI CountText;
         [SerializeField] private TileData TileDat;
+        private TileType mTileType;
 
-        public void SetGoal(LevelGoal levelGoal) 
+        public void SetGoal(LevelGoal levelGoal)
         {
-            SetBackgroundColor(levelGoal.TargetTile);
+            mTileType = levelGoal.TargetTile;
+            SetBackgroundColor(mTileType);
             UpdateCount(levelGoal.Count);
         }
 
@@ -23,9 +25,16 @@ namespace ColorBlast
             CountText.SetText("x" + count);
         }
 
-        private void SetBackgroundColor(TileType tileType) 
+        private void SetBackgroundColor(TileType tileType)
         {
-            BackgroundImage.color = TileDat.GetTileColor(tileType);
+            Color color = TileDat.GetTileColor(tileType);
+            color.a = 1f;
+            BackgroundImage.color = color;
+        }
+
+        public void RefreshColor()
+        {
+            SetBackgroundColor(mTileType);
         }
     }
 }

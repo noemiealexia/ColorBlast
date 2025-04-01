@@ -48,10 +48,12 @@ namespace ColorBlast
         public void LoadLevel(int levelIndex)
         {
             mLastLoadedLevelIndex = levelIndex;
-            
-            if (mLastLoadedLevelIndex < GetTotalLevelCount()) 
+
+            if (mLastLoadedLevelIndex < GetTotalLevelCount())
             {
-                mCurrentLevel = mLevelData.LevelList[mLastLoadedLevelIndex];
+                mCurrentLevelIndex = levelIndex; 
+                mCurrentLevel = mLevelData.LevelList[mCurrentLevelIndex];
+
                 CopyCurrentGoals(mCurrentLevel);
                 mLevelCompleted = false;
 

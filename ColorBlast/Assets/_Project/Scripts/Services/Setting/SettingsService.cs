@@ -10,6 +10,7 @@ namespace ColorBlast
     public struct AudioSetting 
     {
         public bool SfxIsOn;
+        public bool ColorBlindMode;
     }
 
     public class SettingsService : ISettingsService
@@ -33,6 +34,7 @@ namespace ColorBlast
         {
             var saveData = mSaveService.GetSaveData();
             saveData.Settings.SfxIsOn = audioSetting.SfxIsOn;
+            saveData.Settings.ColorBlindMode = audioSetting.ColorBlindMode;
             mSaveService.Save();
 
             SettingsUpdated?.Invoke();
@@ -41,9 +43,10 @@ namespace ColorBlast
         public AudioSetting GetAudioSettings()
         {
             var saveData = mSaveService.GetSaveData();
-            AudioSetting audioSetting = new AudioSetting() 
+            AudioSetting audioSetting = new AudioSetting()
             {
                 SfxIsOn = saveData.Settings.SfxIsOn,
+                ColorBlindMode = saveData.Settings.ColorBlindMode 
             };
 
             return audioSetting;

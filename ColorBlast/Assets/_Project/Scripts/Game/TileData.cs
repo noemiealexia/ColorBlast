@@ -10,6 +10,7 @@ namespace ColorBlast
     {
         public TileType TType;
         public Color TColor;
+        public Color TColorBlind;
         public bool SpecialTile;
     }
 
@@ -21,15 +22,18 @@ namespace ColorBlast
     {
         public List<TileInfo> Tiles;
 
-        public Color GetTileColor(TileType tileType) 
+        public Color GetTileColor(TileType tileType)
         {
             var tile = Tiles.Find(x => x.TType == tileType);
 
-            if(tile != null) 
+            if (tile != null)
             {
-                return tile.TColor;
+                var settings = ServiceManager.Instance.Get<ISettingsService>();
+                var isColorBlind = settings.GetAudioSettings().ColorBlindMode;
+
+                return isColorBlind ? tile.TColorBlind : tile.TColor;
             }
-            else 
+            else
             {
                 return Color.magenta;
             }
